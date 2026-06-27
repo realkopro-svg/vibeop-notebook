@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제갈량의 시험 병법서</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Serif+KR:wght@500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Gowun Dodum', sans-serif;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(120,30,30,0.25), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(40,30,20,0.4), transparent 50%),
+      linear-gradient(135deg, #1a1410 0%, #2c1810 60%, #3a1818 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #2c2418;
+  }
+
+  .book {
+    width: 100%;
+    max-width: 480px;
+    height: 90vh;
+    max-height: 800px;
+    background: #f4ead2;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(180,150,100,0.04) 0px, rgba(180,150,100,0.04) 1px, transparent 1px, transparent 4px);
+    border-radius: 6px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(100,70,40,0.2);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 3px solid #6b4423;
+  }
+
+  /* progress bar */
+  .progress-track {
+    height: 5px;
+    background: #d8c29a;
+    width: 100%;
+    flex-shrink: 0;
+    border-bottom: 1px solid #b89968;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8b1a1a, #c1810a, #d4a01a);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .page-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .page-area::-webkit-scrollbar { width: 6px; }
+  .page-area::-webkit-scrollbar-thumb { background: #b89968; border-radius: 3px; }
+
+  .page {
+    display: none;
+    padding: 34px 28px 40px;
+    min-height: 100%;
+    animation: fadeIn 0.5s ease;
+  }
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(14px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ---------- COVER ---------- */
+  .cover {
+    background:
+      radial-gradient(ellipse at 50% 30%, #3a2818 0%, #1a0e08 100%);
+    color: #f0e0c0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 32px;
+    position: relative;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border: 2px solid rgba(193,129,10,0.5);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    border: 1px solid rgba(193,129,10,0.25);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+  .cover .seal {
+    width: 84px; height: 84px;
+    margin-bottom: 22px;
+  }
+  .cover .banner {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: #c1810a;
+    margin-bottom: 14px;
+  }
+  .cover h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    font-size: 42px;
+    line-height: 1.3;
+    color: #f0d89a;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 12px rgba(193,129,10,0.4);
+  }
+  .cover h1 .small { font-size: 26px; display:block; color:#d4a84a; margin-top:6px; }
+  .cover .sub {
+    font-family: 'Gowun Batang', serif;
+    font-size: 14px;
+    color: #b89968;
+    margin-top: 22px;
+    line-height: 1.9;
+    font-style: italic;
+  }
+  .cover .author-plate {
+    margin-top: 34px;
+    padding: 10px 26px;
+    border: 1px solid rgba(193,129,10,0.5);
+    border-radius: 2px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    color: #d4b878;
+    letter-spacing: 2px;
+  }
+  .cover .author-plate b { color: #f0d89a; }
+  .cover .tagline {
+    position: absolute;
+    bottom: 34px;
+    font-size: 11px;
+    color: #7a6244;
+    letter-spacing: 3px;
+  }
+
+  /* ---------- OUTSAPYO / PROLOGUE ---------- */
+  .scroll-page {
+    background:
+      radial-gradient(ellipse at top, rgba(193,129,10,0.06), transparent 60%);
+  }
+  .scroll-head {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .scroll-head .ch-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12px; letter-spacing: 4px; color: #8b1a1a;
+  }
+  .scroll-head h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    font-size: 30px;
+    color: #5a2818;
+    margin: 6px 0 2px;
+  }
+  .scroll-head .h2-sub { font-size: 12px; color: #8a7048; font-family:'Gowun Batang',serif; font-style: italic;}
+  .divider {
+    width: 60%; height: 1px; margin: 16px auto;
+    background: linear-gradient(90deg, transparent, #b89968, transparent);
+    position: relative;
+  }
+  .divider::after {
+    content: '❖'; position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+    color: #c1810a; font-size: 13px; background: #f4ead2; padding: 0 8px;
+  }
+  .chulsapyo p {
+    font-family: 'Gowun Batang', serif;
+    font-size: 14.5px;
+    line-height: 2.05;
+    color: #3a2c18;
+    margin-bottom: 15px;
+    text-align: justify;
+  }
+  .chulsapyo p .big { font-size: 16px; font-weight: 700; color: #8b1a1a; }
+  .chulsapyo p b { color: #6b4423; font-weight: 700; }
+  .chulsapyo .signature {
+    text-align: right;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    color: #5a2818;
+    margin-top: 22px;
+    line-height: 1.8;
+  }
+  .chulsapyo .signature .seal-mark {
+    display: inline-block;
+    color: #8b1a1a;
+    border: 1.5px solid #8b1a1a;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+    margin-left: 6px;
+    transform: rotate(-4deg);
+  }
+
+  /* ---------- TOC ---------- */
+  .toc h2 {
+    font-family: 'Noto Serif KR', serif; font-weight: 900;
+    font-size: 26px; color: #5a2818; margin-bottom: 2px; text-align: center;
+  }
+  .toc .toc-sub {
+    text-align: center; font-size: 12.5px; color: #8a7048;
+    margin-bottom: 22px; font-family: 'Gowun Batang', serif; font-style: italic;
+  }
+  .toc-item {
+    display: flex; align-items: center; gap: 13px;
+    padding: 13px 14px; margin-bottom: 8px;
+    background: linear-gradient(135deg, #efe2c4, #f4ead2);
+    border-radius: 4px; cursor: pointer; transition: all 0.2s ease;
+    border: 1px solid #ddc89c; border-left: 4px solid #c1810a;
+  }
+  .toc-item:hover {
+    background: #f7eed8; border-left-color: #8b1a1a;
+    transform: translateX(5px); box-shadow: 0 3px 10px rgba(100,70,40,0.15);
+  }
+  .toc-num {
+    font-family: 'Noto Serif KR', serif; font-weight: 900;
+    font-size: 17px; color: #8b1a1a; min-width: 30px; text-align: center;
+  }
+  .toc-icon { width: 30px; height: 30px; flex-shrink: 0; }
+  .toc-text { flex: 1; }
+  .toc-title { font-size: 14px; font-weight: bold; color: #3a2c18; line-height: 1.3; }
+  .toc-desc { font-size: 11px; color: #9a8868; margin-top: 2px; }
+
+  /* ---------- CONTENT PAGE ---------- */
+  .chapter-tag {
+    display: inline-block; font-family: 'Noto Serif KR', serif;
+    font-size: 11px; color: #fff; background: #8b1a1a;
+    padding: 4px 14px; border-radius: 2px; margin-bottom: 14px;
+    letter-spacing: 2px;
+  }
+  .page h2.ch-title {
+    font-family: 'Noto Serif KR', serif; font-weight: 900;
+    font-size: 24px; line-height: 1.3; color: #5a2818; margin-bottom: 4px;
+  }
+  .scene-illust {
+    width: 100%; border-radius: 6px; margin: 14px 0 8px;
+    border: 1px solid #c8b48a;
+    box-shadow: 0 4px 14px rgba(80,50,20,0.2);
+    display: block;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #e8dcc0;
+  }
+  /* shows when an image hasn't been uploaded yet */
+  .scene-illust-wrap {
+    position: relative; margin: 14px 0 8px;
+  }
+  .scene-illust-wrap .placeholder-note {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Noto Serif KR', serif; font-size: 13px; color: #9a8050;
+    border: 1px dashed #b89968; border-radius: 6px;
+    background: repeating-linear-gradient(45deg,#efe2c4,#efe2c4 10px,#e8d8b4 10px,#e8d8b4 20px);
+    pointer-events: none; opacity: 0; text-align: center; line-height: 1.6;
+  }
+  .scene-illust-wrap .scene-illust:not([src]),
+  .scene-illust-wrap img.broken + .placeholder-note { opacity: 1; }
+  .scene-caption {
+    text-align: center; font-size: 11.5px; color: #9a8050;
+    font-family: 'Gowun Batang', serif; font-style: italic; margin-bottom: 16px;
+  }
+  .jegal-says {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: linear-gradient(135deg, #f0e2c0, #f6eed6);
+    border: 1px solid #d8c094; border-radius: 10px;
+    padding: 14px 15px; margin: 16px 0;
+    position: relative;
+  }
+  .jegal-avatar {
+    width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%;
+    border: 2px solid #c1810a; background: #2c1810;
+  }
+  .jegal-bubble { flex: 1; }
+  .jegal-bubble .jname {
+    font-family: 'Noto Serif KR', serif; font-weight: 700;
+    font-size: 12px; color: #8b1a1a; margin-bottom: 4px;
+  }
+  .jegal-bubble p {
+    font-family: 'Gowun Batang', serif; font-size: 13.5px;
+    line-height: 1.8; color: #4a3a20; font-style: italic;
+  }
+
+  .block { margin-bottom: 18px; }
+  .block-title {
+    font-size: 15px; font-weight: bold; color: #8b1a1a;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+    font-family: 'Noto Serif KR', serif;
+  }
+  .block-title .flag {
+    font-size: 14px; flex-shrink: 0;
+  }
+  .block p { font-size: 14px; line-height: 1.85; color: #3a3022; margin-bottom: 8px; }
+  .block ul { list-style: none; margin: 6px 0; }
+  .block li {
+    font-size: 13.5px; line-height: 1.7; color: #3a3022;
+    padding-left: 20px; position: relative; margin-bottom: 7px;
+  }
+  .block li::before { content: '⚔'; position: absolute; left: 0; color: #c1810a; font-size: 11px; }
+  .block b { color: #6b3818; }
+
+  .example {
+    background: #e8efe6;
+    border: 1px solid #c0d4bc; border-left: 4px solid #5a8a5a;
+    border-radius: 6px; padding: 12px 15px; margin: 12px 0;
+    font-size: 13px; line-height: 1.75; color: #2c4a2c;
+  }
+  .example .ex-label {
+    font-weight: bold; color: #3a7a3a; font-size: 11.5px;
+    display: block; margin-bottom: 4px; font-family: 'Noto Serif KR', serif;
+  }
+
+  .highlight-box {
+    background: linear-gradient(135deg, #fbeecb, #f5dca8);
+    border: 2px solid #c1810a; border-radius: 6px;
+    padding: 16px 18px; margin: 18px 0; text-align: center;
+    position: relative;
+  }
+  .highlight-box .hb-icon { font-size: 22px; }
+  .highlight-box p {
+    font-family: 'Noto Serif KR', serif; font-weight: 700;
+    font-size: 14.5px; line-height: 1.7; color: #8b3a0a; margin-top: 6px;
+  }
+  .highlight-box .stamp {
+    position: absolute; top: -10px; right: 12px;
+    font-family: 'Noto Serif KR', serif; font-size: 11px; color: #fff;
+    background: #8b1a1a; padding: 2px 10px; border-radius: 2px; letter-spacing: 1px;
+  }
+
+  .routine-step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: #efe2c4; border-radius: 6px; border-left: 3px solid #c1810a;
+    padding: 11px 14px; margin-bottom: 9px;
+  }
+  .routine-step .rs-num {
+    font-family: 'Noto Serif KR', serif; font-weight: 900;
+    background: #8b1a1a; color: #f0d89a;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .routine-step .rs-text { font-size: 13.5px; line-height: 1.6; color: #3a3022; }
+  .routine-step .rs-text b { color: #8b1a1a; }
+
+  .breath { display: flex; justify-content: center; gap: 10px; margin: 16px 0; }
+  .breath div {
+    flex: 1; text-align: center; padding: 14px 6px;
+    background: #e2e8ec; border-radius: 6px; border: 1px solid #b0c0c8;
+  }
+  .breath .bn { font-family: 'Noto Serif KR', serif; font-weight: 900; font-size: 22px; color: #4a6a8a; }
+  .breath .bl { font-size: 11px; color: #6a7888; margin-top: 4px; }
+
+  /* ---------- FINALE ---------- */
+  .finale {
+    background: radial-gradient(ellipse at 50% 35%, #3a2818 0%, #1a0e08 100%);
+    color: #f0e0c0; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 40px 34px; position: relative;
+  }
+  .finale::before {
+    content: ''; position: absolute; inset: 16px;
+    border: 1px solid rgba(193,129,10,0.4); border-radius: 3px;
+  }
+  .finale .seal { width: 70px; height: 70px; margin-bottom: 20px; }
+  .finale h2 {
+    font-family: 'Noto Serif KR', serif; font-weight: 900;
+    font-size: 24px; color: #f0d89a; margin-bottom: 18px;
+  }
+  .finale p {
+    font-family: 'Gowun Batang', serif; font-size: 14.5px;
+    line-height: 2; color: #cbb588; margin-bottom: 14px;
+  }
+  .finale p b { color: #f0d89a; }
+  .finale .final-seal {
+    margin-top: 24px; font-family: 'Noto Serif KR', serif; font-size: 13px;
+    color: #d4a84a; letter-spacing: 2px;
+  }
+
+  /* ---------- NAV ---------- */
+  .nav {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 16px; background: #6b4423;
+    border-top: 2px solid #c1810a;
+  }
+  .nav button {
+    font-family: 'Gowun Dodum', sans-serif; border: none;
+    background: #2c1810; color: #f0d89a;
+    padding: 9px 18px; border-radius: 3px; font-size: 13px; cursor: pointer;
+    transition: all 0.2s ease; display: flex; align-items: center; gap: 5px;
+    border: 1px solid #c1810a;
+  }
+  .nav button:hover:not(:disabled) { background: #8b1a1a; transform: scale(1.04); }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  .nav .home-btn { background: transparent; color: #f0d89a; padding: 8px 11px; font-size: 17px; }
+  .nav .home-btn:hover { background: #8b1a1a; transform: scale(1.1); }
+  .page-indicator {
+    font-size: 12px; color: #f0d89a; font-family: 'Noto Serif KR', serif;
+    text-align: center; min-width: 60px;
+  }
+
+  @media (max-width: 420px) {
+    .page { padding: 28px 20px 34px; }
+    .cover h1 { font-size: 36px; }
+    .chulsapyo p { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="book">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="page-area" id="pageArea">
+
+    <!-- 0: COVER -->
+    <div class="page active cover">
+      <svg class="seal" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs><radialGradient id="sealg" cx="0.5" cy="0.4" r="0.7"><stop offset="0" stop-color="#e0a83a"/><stop offset="1" stop-color="#b8761a"/></radialGradient></defs>
+        <circle cx="50" cy="50" r="47" fill="none" stroke="#c1810a" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#8b1a1a" stroke-width="3"/>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="#c1810a" stroke-width="1"/>
+        <!-- dragon-ish swirl ring -->
+        <g stroke="#c1810a" stroke-width="1" fill="none" opacity="0.6">
+          <path d="M50 14 Q60 18 58 26 M86 50 Q82 60 74 58 M50 86 Q40 82 42 74 M14 50 Q18 40 26 42"/>
+        </g>
+        <circle cx="50" cy="50" r="22" fill="url(#sealg)" opacity="0.9"/>
+        <circle cx="50" cy="50" r="22" fill="none" stroke="#8b1a1a" stroke-width="1.5"/>
+        <text x="50" y="60" font-size="26" fill="#1a0e08" text-anchor="middle" font-family="Noto Serif KR" font-weight="900">智</text>
+      </svg>
+      <div class="banner">臥龍(와룡)의 兵法(병법)</div>
+      <h1>제갈량의<span class="small">시험 병법서</span></h1>
+      <div class="sub">— 천하를 향한 긴 출정에 오르는<br>그대에게 바치는 병법(兵法) —</div>
+      <div class="author-plate">軍師(군사) <b>諸葛亮 孔明</b><br>제갈량 공명 전수</div>
+      <div class="tagline">三 國 志 學 習 兵 法</div>
+    </div>
+
+    <!-- 1: CHULSAPYO (PROLOGUE) -->
+    <div class="page scroll-page chulsapyo">
+      <div class="scroll-head">
+        <div class="ch-label">序(서) — 출 정 의 글</div>
+        <h2>출사표 (出師表)</h2>
+        <div class="h2-sub">— 군사(軍師) 제갈량, 출정하는 그대에게 고하노라 —</div>
+      </div>
+      <div class="divider"></div>
+      <p><span class="big">그대여.</span> 이제 그대는 '배움'이라는 천하를 평정하기 위한 긴 출정에 오르려 한다. 그 길은 멀고, 도중에 '시험'이라는 수많은 관문이 그대를 시험할 것이다.</p>
+      <p>허나 두려워 말라. <b>관문은 그대를 막으려 세워진 것이 아니라, 그대가 얼마나 자랐는지를 비추는 거울</b>일 뿐이다. 한 관문을 넘을 때마다 그대의 칼은 더 날카로워지고, 그대의 기개는 더 단단해지리라.</p>
+      <p>내 일찍이 천하의 형세를 읽어 길을 열었듯, 이 병법서에 <b>배움과 시험을 다스리는 모든 계책</b>을 담아 그대에게 전하노라. 외우려 하지 말고, 한 장(章)씩 몸에 새겨 그대의 것으로 삼으라.</p>
+      <p>승패는 하늘에 달렸으나, <b>준비는 사람에게 달렸다(謀事在人).</b> 점수에 일희일비하지 말고, 오직 그대가 세운 계책을 끝까지 밀고 나아가라. 그리하면 천하는 반드시 그대의 것이 되리라.</p>
+      <p class="signature">
+        삼가 이 글을 올리며, 그대의 출정에 천운이 함께하기를.<br>
+        — 군사 제갈량 공명 <span class="seal-mark">孔明</span>
+      </p>
+    </div>
+
+    <!-- 2: TOC -->
+    <div class="page toc">
+      <h2>병법 목록 (兵法目錄)</h2>
+      <div class="toc-sub">— 펼치고자 하는 계책을 눌러 나아가라 —</div>
+      <div class="toc-item" data-go="3"><span class="toc-num">一</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><path d="M20 4 L34 10 V20 C34 30 20 37 20 37 C20 37 6 30 6 20 V10 Z" fill="#8b1a1a" opacity="0.85"/><path d="M20 12 v14 M14 19 h12" stroke="#f0d89a" stroke-width="2" fill="none"/></svg>
+        <div class="toc-text"><div class="toc-title">제1계 · 심전(心戰)</div><div class="toc-desc">마음을 먼저 다스리는 법</div></div></div>
+      <div class="toc-item" data-go="4"><span class="toc-num">二</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><path d="M8 32 L28 12 L32 16 L12 36 Z" fill="#6b4423"/><path d="M28 8 L36 12 L32 16 Z" fill="#c1810a"/><circle cx="11" cy="33" r="3" fill="#8b1a1a"/></svg>
+        <div class="toc-text"><div class="toc-title">제2계 · 연병(鍊兵)</div><div class="toc-desc">매일 무기를 벼리는 공부법</div></div></div>
+      <div class="toc-item" data-go="5"><span class="toc-num">三</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><path d="M4 24 Q12 16 20 24 T36 24" stroke="#3a6a9a" stroke-width="3" fill="none"/><path d="M4 30 Q12 22 20 30 T36 30" stroke="#5a8aba" stroke-width="3" fill="none"/></svg>
+        <div class="toc-text"><div class="toc-title">제3계 · 도하(渡河)</div><div class="toc-desc">망각의 강을 건너는 복습</div></div></div>
+      <div class="toc-item" data-go="6"><span class="toc-num">四</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><rect x="6" y="6" width="28" height="28" rx="2" fill="#efe2c4" stroke="#6b4423" stroke-width="1.5"/><path d="M12 14 h16 M12 20 h16 M12 26 h10" stroke="#8b1a1a" stroke-width="1.5"/></svg>
+        <div class="toc-text"><div class="toc-title">제4계 · 지형(地形)</div><div class="toc-desc">과목마다 다른 길 공략</div></div></div>
+      <div class="toc-item" data-go="7"><span class="toc-num">五</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><path d="M20 4 C24 14 32 14 30 24 C28 34 20 36 20 36 C20 36 12 34 10 24 C8 14 16 14 20 4 Z" fill="#c1810a"/><path d="M20 14 C22 20 25 20 24 26 C22 32 20 33 20 33 C20 33 18 32 16 26 C15 20 18 20 20 14Z" fill="#8b1a1a"/></svg>
+        <div class="toc-text"><div class="toc-title">제5계 · 결전(決戰)</div><div class="toc-desc">시험 당일 운영의 병법</div></div></div>
+      <div class="toc-item" data-go="8"><span class="toc-num">六</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><path d="M20 6 L30 14 L26 30 H14 L10 14 Z" fill="#4a8aba"/><path d="M20 6 L30 14 L20 18 Z" fill="#7ac0e0"/><path d="M20 6 L10 14 L20 18 Z" fill="#3a7aaa"/></svg>
+        <div class="toc-text"><div class="toc-title">제6계 · 사수(死守)</div><div class="toc-desc">단 1점을 지키는 기술</div></div></div>
+      <div class="toc-item" data-go="9"><span class="toc-num">七</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><path d="M6 26 Q14 10 22 22 Q28 6 36 20" stroke="#5a5a6a" stroke-width="3" fill="none"/><path d="M14 30 l3 6 M22 30 l3 6 M30 30 l3 6" stroke="#4a7aaa" stroke-width="2"/></svg>
+        <div class="toc-text"><div class="toc-title">제7계 · 풍랑(風浪)</div><div class="toc-desc">시험장 위기 대응술</div></div></div>
+      <div class="toc-item" data-go="10"><span class="toc-num">八</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><path d="M20 34 V18" stroke="#5a3a1a" stroke-width="3"/><path d="M20 20 C12 18 10 10 16 8 C18 14 22 14 20 20Z" fill="#5a8a3a"/><path d="M20 24 C28 22 30 14 24 12 C22 18 18 18 20 24Z" fill="#6a9a4a"/></svg>
+        <div class="toc-text"><div class="toc-title">제8계 · 복기(復棋)</div><div class="toc-desc">오답으로 더 강해지기</div></div></div>
+      <div class="toc-item" data-go="11"><span class="toc-num">九</span>
+        <svg class="toc-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="11" fill="none" stroke="#c1810a" stroke-width="2"/><path d="M24 13 A9 9 0 1 0 27 25 A11 11 0 1 1 24 13Z" fill="#d4b878"/></svg>
+        <div class="toc-text"><div class="toc-title">제9계 · 양생(養生)</div><div class="toc-desc">몸과 마음을 지키는 법</div></div></div>
+    </div>
+
+    <!-- 3: CH1 심전 -->
+    <div class="page">
+      <span class="chapter-tag">第一計(제일계) · 心戰(심전)</span>
+      <h2 class="ch-title">마음을 먼저 다스리는 법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch1.png" alt="고요한 호수 앞에서 명상하는 제갈량" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제1장 심전(心戰) 이미지<br>images/ch1.png</div>
+      </div>
+      <div class="scene-caption">고요한 호수 앞, 군사는 흔들림 없이 앉아 있었다.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"장수가 동요하면 만 명의 군사가 무너진다. 칼을 들기 전에, 먼저 그대의 마음부터 평정하라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>긴장은 적이 아니라 아군이다</div>
+        <p>가슴이 두근거리는 것은 <b>그대의 정신이 전투를 위해 깨어나는 신호</b>다. "망했다"가 아니라 "준비됐다는 증거"로 받아들이라.</p>
+        <div class="example"><span class="ex-label">이렇게 외쳐보라</span>"오, 내 정신이 지금 전장에 임할 채비를 하는구나!"</div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>내가 어려우면, 적도 어렵다</div>
+        <p>모르는 문제를 만나도 당황 말라. 그대에게 험한 길은 <b>다른 모든 이에게도 똑같이 험하다.</b> 그대만 막힌 것이 아니다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>승패보다 계책의 실행</div>
+        <p>점수란 하늘의 뜻이라 다스릴 수 없으나, <b>"내가 세운 계책을 끝까지 실행했는가"</b>는 그대가 다스릴 수 있다. 다스릴 수 있는 것에 집중하면 마음이 고요해진다.</p>
+      </div>
+      <div class="highlight-box"><div class="stamp">心法</div>
+        <div class="hb-icon">🛡️</div>
+        <p>흔들려도 좋다.<br>다시 중심을 잡는 힘, 그것이 명장의 그릇이다.</p>
+      </div>
+    </div>
+
+    <!-- 4: CH2 연병 -->
+    <div class="page">
+      <span class="chapter-tag">第二計(제이계) · 鍊兵(연병)</span>
+      <h2 class="ch-title">매일 무기를 벼리는 공부법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch2.png" alt="연무장에서 검을 휘두르며 수련하는 병사" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제2장 연병(鍊兵) 이미지<br>images/ch2.png</div>
+      </div>
+      <div class="scene-caption">매일 같은 시각, 그는 묵묵히 검을 휘둘렀다.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"공부란 머리에 '넣는 것'이 아니라, 필요할 때 '꺼내는 힘'을 기르는 것이다. 꺼내본 적 없는 칼은 녹슨 칼이니라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>황금 사이클의 진법</div>
+        <p><b>예습(20%) → 수업(100%) → 당일 복습(15분)</b>의 리듬을 타라.</p>
+        <div class="example"><span class="ex-label">실전 예시</span>내일 배울 과학 단원 목차에서 '삼투압'에 밑줄(예습) → 선생님이 "이건 반드시 나온다" 한 곳에 별표(수업) → 귀가 후 15분, 책 덮고 핵심 3가지 떠올리기(복습)</div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>백지 복습법 — 빈 종이의 진법</div>
+        <p>한 단원이 끝나면 <b>책을 덮고</b> 빈 종이에 배운 것을 모두 적으라. 막히는 곳이 곧 <b>그대 진영의 허점</b>이다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>설명하기 — 군략을 논하듯</div>
+        <p>배운 것을 가족에게 <b>장수가 군략 논하듯</b> 설명해보라. 막힘없이 설명 못 하면 아직 그대의 것이 아니다.</p>
+        <div class="example"><span class="ex-label">실전 예시</span>"태조 이성계가 위화도에서 회군한 까닭은 말일세…"라며 동생 앞에서 강론하기</div>
+      </div>
+      <div class="highlight-box"><div class="stamp">鍊兵</div>
+        <div class="hb-icon">⚔️</div>
+        <p>읽기만 하는 것은 훈련이 아니다.<br>꺼내어 휘둘러야 비로소 그대의 무기가 된다.</p>
+      </div>
+    </div>
+
+    <!-- 5: CH3 도하 -->
+    <div class="page">
+      <span class="chapter-tag">第三計(제삼계) · 渡河(도하)</span>
+      <h2 class="ch-title">망각의 강을 건너는 법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch3.png" alt="디딤돌을 밟으며 강을 건너는 나그네" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제3장 도하(渡河) 이미지<br>images/ch3.png</div>
+      </div>
+      <div class="scene-caption">강을 건너는 디딤돌은 당일·이틀·일주·한 달이라.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"사람의 기억은 본디 흐르는 강물처럼 사라지게 마련. 허나 디딤돌을 제때 밟으면, 누구든 강을 건널 수 있느니라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>망각을 이기는 디딤돌 (반복의 진)</div>
+        <ul>
+          <li><b>제1보 (그날 안에)</b> · 15분, 이해된 것/애매한 것 가르기</li>
+          <li><b>제2보 (1~2일 후)</b> · 다시 한번 점검</li>
+          <li><b>제3보 (1주일 후)</b> · 주말에 한 주 내용 총정리</li>
+          <li><b>제4보 (1개월 후)</b> · 단원 전체 흐름 굳히기</li>
+        </ul>
+      </div>
+      <div class="highlight-box"><div class="stamp">渡河</div>
+        <div class="hb-icon">⏳</div>
+        <p>전부 못 밟아도 좋다.<br>'당일 복습 + 주말 정리'만 해도<br>이미 상위 10%의 진영이니라!</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>패한 적은 끈질기게 다시</div>
+        <p>틀린 문제는 <b>3일·7일·15일·30일</b> 간격으로 다시 치라. 네 번 연속 이겨야 비로소 그 적을 명부에서 지운다.</p>
+      </div>
+    </div>
+
+    <!-- 6: CH4 지형 -->
+    <div class="page">
+      <span class="chapter-tag">第四計(제사계) · 地形(지형)</span>
+      <h2 class="ch-title">과목마다 다른 길을 읽는 법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch4.png" alt="천하 지형도 — 산맥과 강, 성채가 그려진 옛 지도" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제4장 지형(地形) 이미지<br>images/ch4.png</div>
+      </div>
+      <div class="scene-caption">지형을 모르고 진군하는 장수는 반드시 패한다.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"산을 칠 때와 강을 건널 때의 병법이 어찌 같으랴. 과목의 지형을 읽어, 그에 맞는 계책을 쓰라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>수학·과학 — 계통의 산악전</div>
+        <p>개념 → 예제 → 유형 → 오답 재풀이. 답을 맞히기보다 <b>"왜 이 풀이를 택했는가"</b>를 설명할 수 있어야 한다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>국어·영어 — 누적의 지구전</div>
+        <p>'왜 이것이 정답이고 저것은 오답인가' <b>근거를 찾는 훈련</b>. 영어는 단어가 팔 할, 매일 누적 반복이 필수다.</p>
+        <div class="example"><span class="ex-label">실전 예시</span>"셋째 줄 However 뒤에 핵심이 있으니 4번이 정답"이라 근거에 밑줄을 긋는다</div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>사회·역사 — 구조의 진법</div>
+        <p>무작정 외우지 말고 <b>원인 → 과정 → 결과</b>의 흐름으로 꿰어라.</p>
+        <div class="example"><span class="ex-label">실전 예시</span>산업혁명 = [증기기관 발명 → 생산력 증대 → 도시화 → 노동 문제]로 연표 정리</div>
+      </div>
+    </div>
+
+    <!-- 7: CH5 결전 -->
+    <div class="page">
+      <span class="chapter-tag">第五計(제오계) · 決戰(결전)</span>
+      <h2 class="ch-title">시험 당일, 결전의 병법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch5.png" alt="蜀 깃발을 든 장수가 기마 돌격하는 전장" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제5장 결전(決戰) 이미지<br>images/ch5.png</div>
+      </div>
+      <div class="scene-caption">북소리가 울리고, 마침내 결전의 날이 밝았다.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"전투는 무용(武勇)만으로 이기지 못한다. 시간을 다스리는 자가 전장을 다스리느니라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>O · △ · X 진형 (병력 배치)</div>
+        <ul>
+          <li><b>O</b> · 보자마자 풀리는 문제부터 친다</li>
+          <li><b>△</b> · 풀 만하나 시간 걸리는 적은 별표 후 후퇴</li>
+          <li><b>X</b> · 최강의 적은 가장 나중에 친다</li>
+        </ul>
+        <p>한 문제에 <b>2~3분 이상</b> 막히면 과감히 손절! 강한 적 하나에 매달려 약한 적 셋을 놓침이 최악의 패다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>실시간 소거법 — 적을 미리 베기</div>
+        <p>문제를 읽으며 <b>동시에 보기를 베어내라.</b> '항상·절대·모두' 같은 극단의 표현은 함정일 확률이 높다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>모르는 적 만났을 때 — 5초 진법</div>
+        <div class="routine-step"><span class="rs-num">1</span><span class="rs-text"><b>심호흡 1회</b> — 마음을 리셋</span></div>
+        <div class="routine-step"><span class="rs-num">2</span><span class="rs-text"><b>다시 천천히 읽기</b> — 안 풀리는 문제 70%는 조건을 놓친 것</span></div>
+        <div class="routine-step"><span class="rs-num">3</span><span class="rs-text"><b>★ 표시 후 후퇴</b> — 30초 넘게 고민 말고 넘어가라</span></div>
+      </div>
+    </div>
+
+    <!-- 8: CH6 사수 -->
+    <div class="page">
+      <span class="chapter-tag">第六計(제육계) · 死守(사수)</span>
+      <h2 class="ch-title">단 1점을 지키는 기술</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch6.png" alt="蜀 깃발이 걸린 성벽 위에서 수성하는 병사들" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제6장 사수(死守) 이미지<br>images/ch6.png</div>
+      </div>
+      <div class="scene-caption">한 치의 성벽도 적에게 내어주지 않으리라.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"단 한 점의 성(城)이 천하의 승패를 가른다. 빈칸으로 성문을 열어주는 것은 항복과 같으니라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>수학 서술형 — 줄 맞춰 기록</div>
+        <p>암산으로 답만 쓰지 말고 <b>모든 단계를 줄 맞춰</b> 적으라. 그 과정 하나하나가 부분 점수의 근거(증좌)다.</p>
+        <div class="example"><span class="ex-label">실전 예시</span>"양변에 3을 곱하면 3x+6=12, 6을 이항하면 3x=6, 따라서 x=2"</div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>서술형 — 핵심 키워드 두괄식</div>
+        <p>핵심 단어를 <b>문장 맨 앞에</b> 먼저 세워라. 채점하는 장수의 눈에 즉시 띄게 하라.</p>
+      </div>
+      <div class="highlight-box"><div class="stamp">死守</div>
+        <div class="hb-icon">💎</div>
+        <p>빈칸은 무조건 0점!<br>모르는 적도 끝까지 비벼서 한 줄이라도 써라.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>검토의 순찰</div>
+        <p>마지막 5~10분은 검토에. 수학·과학은 <b>단위(cm/m)와 음수 부호(-)</b>를 의식적으로 순찰하라.</p>
+      </div>
+    </div>
+
+    <!-- 9: CH7 풍랑 -->
+    <div class="page">
+      <span class="chapter-tag">第七計(제칠계) · 風浪(풍랑)</span>
+      <h2 class="ch-title">시험장의 위기에 대응하는 법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch7.png" alt="번개와 거센 파도 속에서 키를 잡은 蜀 함선" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제7장 풍랑(風浪) 이미지<br>images/ch7.png</div>
+      </div>
+      <div class="scene-caption">폭풍 속에서도 키를 놓지 않는 자가 살아남는다.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"적벽의 큰 바람도 미리 대비한 자에게는 기회였다. 위기에 대비된 진법이 있으면, 폭풍도 그대를 흔들지 못한다."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>리셋 호흡법 (4-7-8 진정술)</div>
+        <p>긴장되거나 실수를 발견해 손이 떨릴 때 펼쳐라.</p>
+        <div class="breath">
+          <div><div class="bn">4</div><div class="bl">초 들이마시고</div></div>
+          <div><div class="bn">7</div><div class="bl">초 참은 뒤</div></div>
+          <div><div class="bn">8</div><div class="bl">초 내뱉기</div></div>
+        </div>
+        <p>스트레스 기운(코르티솔)이 가라앉아 다시 침착함을 되찾는다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>마킹 실수를 발견했다면</div>
+        <p>"아직 시간 있다. 충분히 고칠 수 있다"고 스스로에게 호령하라. 여럿 밀렸다면 수정테이프보다 <b>OMR 교체 요청</b>이 빠를 수 있다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>끝난 전투는 돌아보지 말라</div>
+        <p>한 과목 끝나고 벗과 답을 맞추지 말라. 혼란과 불안만 부른다. <b>"끝난 전투는 과거, 내가 다스릴 것은 다음 전투뿐"</b>이라 되뇌라.</p>
+      </div>
+    </div>
+
+    <!-- 10: CH8 복기 -->
+    <div class="page">
+      <span class="chapter-tag">第八計(제팔계) · 復棋(복기)</span>
+      <h2 class="ch-title">오답으로 더 강해지는 법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch8.png" alt="등불 켜진 군막에서 바둑으로 전투를 복기하는 군사" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제8장 복기(復棋) 이미지<br>images/ch8.png</div>
+      </div>
+      <div class="scene-caption">군사는 매일 밤, 그날의 전투를 다시 복기했다.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"패배는 부끄러움이 아니라 스승이다. 어찌하여 졌는지를 아는 장수는, 같은 패배를 두 번 겪지 않느니라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>패인(敗因)의 네 가지 분류</div>
+        <p>틀린 문제를 그냥 베끼지 말고, <b>'왜 졌는지'</b>를 가려내라.</p>
+        <ul>
+          <li><b>개념 부족</b> · 그 단원 개념을 다시 학습</li>
+          <li><b>적용 실패</b> · 개념은 아나 응용이 약함 → 유사 유형 더 치기</li>
+          <li><b>단순 실수</b> · 계산·오독 → 나의 실수 패턴 기록</li>
+          <li><b>시간 부족</b> · 시간 안배 훈련 보강</li>
+        </ul>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>If-Then 군령(軍令) 세우기</div>
+        <p>오답에서 <b>그대만의 군령</b>을 뽑아내라.</p>
+        <div class="example"><span class="ex-label">실전 예시</span>"이항 문제를 만나면 → 반드시 부호를 다시 점검한다"<br>"그래프 문제가 나오면 → x축·y축 의미부터 확인한다"</div>
+      </div>
+      <div class="highlight-box"><div class="stamp">復棋</div>
+        <div class="hb-icon">🌱</div>
+        <p>오답노트는 '패배의 기록'이 아니라<br>'승리를 위한 병서(兵書)'이니라.</p>
+      </div>
+    </div>
+
+    <!-- 11: CH9 양생 -->
+    <div class="page">
+      <span class="chapter-tag">第九計(제구계) · 養生(양생)</span>
+      <h2 class="ch-title">몸과 마음을 지키는 법</h2>
+      <div class="scene-illust-wrap">
+        <img class="scene-illust" src="images/ch9.png" alt="달빛과 모닥불 곁 군막에서 깊이 잠든 병사" onerror="this.classList.add('broken');this.removeAttribute('src');">
+        <div class="placeholder-note">제9장 양생(養生) 이미지<br>images/ch9.png</div>
+      </div>
+      <div class="scene-caption">전장을 떠나 깊이 잠든 자만이, 내일을 도모할 수 있다.</div>
+      <div class="jegal-says">
+        <svg class="jegal-avatar" viewBox="0 0 42 42"><circle cx="21" cy="21" r="21" fill="#2c1810"/><circle cx="21" cy="18" r="7" fill="#e8cfa8"/><path d="M14 16 q7 -7 14 0 l-2 -3 q-5 -4 -10 0Z" fill="#1a1a22"/><path d="M10 40 q11 -14 22 0Z" fill="#3a3a4a"/></svg>
+        <div class="jegal-bubble"><div class="jname">제갈량 가로되,</div><p>"활도 늘 당겨두면 부러진다. 그대 자신을 돌보는 것 또한 천하를 도모하는 큰 병법이니라."</p></div>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>수면이 최고의 병참(兵站)</div>
+        <p>시험 전날 밤샘은 <b>최악의 패착</b>이다. 최소 <b>7시간 이상</b> 자야 낮에 익힌 병법이 장기 기억의 창고로 옮겨진다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>집중은 의지가 아니라 진영(陣營)</div>
+        <p>휴대폰을 진영 밖으로 치우고, 정해진 자리에서 <b>25~50분 집중 후 5~10분 휴식</b>. 진영을 바꾸면 집중이 따라온다.</p>
+      </div>
+      <div class="block">
+        <div class="block-title"><span class="flag">🚩</span>결과보다 과정을 치하하라</div>
+        <p>"100점을 얻어서가 아니라, <b>세운 계책을 끝까지 실행해서</b> 자랑스럽다." 이런 치하가 다시 일어서는 힘을 기른다.</p>
+      </div>
+      <div class="highlight-box"><div class="stamp">養生</div>
+        <div class="hb-icon">🌙</div>
+        <p>잘 자고 잘 쉬는 그대 또한<br>천하를 향해 잘 나아가고 있는 것이다.</p>
+      </div>
+    </div>
+
+    <!-- 12: FINALE -->
+    <div class="page finale">
+      <svg class="seal" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#c1810a" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#8b1a1a" stroke-width="3"/>
+        <circle cx="50" cy="50" r="24" fill="#8b1a1a" opacity="0.15"/>
+        <circle cx="50" cy="50" r="24" fill="none" stroke="#c1810a" stroke-width="1.2"/>
+        <text x="50" y="60" font-size="26" fill="#f0d89a" text-anchor="middle" font-family="Noto Serif KR" font-weight="900">勝</text>
+      </svg>
+      <h2>군사의 마지막 당부</h2>
+      <p>그대여, 이제 모든 병법을 전하였다. 길은 멀고 관문은 많으나, <b>이 아홉 가지 계책을 몸에 새긴 그대는 결코 길을 잃지 않으리라.</b></p>
+      <p>승패에 일희일비하지 말라. 한 번의 패배가 전쟁의 끝이 아니며, 한 번의 승리가 전부도 아니다. 오직 <b>멈추지 않고 한 걸음씩 나아가는 자</b>가 끝내 천하를 얻는다.</p>
+      <p>모사재인(謀事在人),<br><b>준비는 사람에게 달렸다.</b><br>그대의 출정에 천운이 함께하기를.</p>
+      <div class="final-seal">— 軍師(군사) 諸葛亮 孔明 —<br>제갈량 공명</div>
+    </div>
+
+  </div>
+
+  <div class="nav">
+    <button class="home-btn" id="homeBtn" title="목록으로">☰</button>
+    <button id="prevBtn">‹ 이전</button>
+    <div class="page-indicator" id="indicator">표지</div>
+    <button id="nextBtn">다음 ›</button>
+  </div>
+</div>
+
+<script>
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const total = pages.length;
+  let current = 0;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const homeBtn = document.getElementById('homeBtn');
+  const indicator = document.getElementById('indicator');
+  const progressFill = document.getElementById('progressFill');
+  const pageArea = document.getElementById('pageArea');
+
+  const labels = ['표지','출사표','병법목록','제1계','제2계','제3계','제4계','제5계','제6계','제7계','제8계','제9계','맺음말'];
+
+  function show(idx) {
+    pages[current].classList.remove('active');
+    current = idx;
+    pages[current].classList.add('active');
+    pageArea.scrollTop = 0;
+    indicator.textContent = labels[current] || (current+1);
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    progressFill.style.width = (current / (total - 1)) * 100 + '%';
+  }
+
+  prevBtn.onclick = () => { if (current > 0) show(current - 1); };
+  nextBtn.onclick = () => { if (current < total - 1) show(current + 1); };
+  homeBtn.onclick = () => show(2); // 병법 목록
+
+  document.querySelectorAll('.toc-item').forEach(item => {
+    item.onclick = () => show(parseInt(item.dataset.go));
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') nextBtn.click();
+    if (e.key === 'ArrowLeft') prevBtn.click();
+  });
+
+  let touchX = null;
+  pageArea.addEventListener('touchstart', e => touchX = e.changedTouches[0].screenX);
+  pageArea.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const diff = e.changedTouches[0].screenX - touchX;
+    if (diff < -50) nextBtn.click();
+    if (diff > 50) prevBtn.click();
+    touchX = null;
+  });
+
+  show(0);
+</script>
+</body>
+</html>
